@@ -7,7 +7,7 @@ public enum AuditLog {
 
     // MARK: - Categories
 
-    public enum Category: String {
+    public enum Category: String, CaseIterable {
         case launchAgent    = "LaunchAgent"
         case launchDaemon   = "LaunchDaemon"
         case accessibility  = "Accessibility"
@@ -22,6 +22,8 @@ public enum AuditLog {
         case storage        = "Storage"
         case keychain       = "Keychain"
         case api            = "API"
+        case tool           = "Tool"
+        case disk           = "Disk"
     }
 
     // MARK: - Loggers (one per category for efficient filtering)
@@ -29,10 +31,10 @@ public enum AuditLog {
     private static let subsystem = "Agent.app.toddbruss.audit"
 
     nonisolated(unsafe) private static let loggers: [Category: Logger] = {
+        // Built from allCases — the old hand-maintained list crashed on the
+        // force-unwrap below whenever a new category was forgotten here.
         var map: [Category: Logger] = [:]
-        for cat in [Category.launchAgent, .launchDaemon, .accessibility,
-                    .appleScript, .agentScript, .permission, .web, .mcp, .xcode, .shell,
-                    .fileBackup, .storage, .keychain, .api] {
+        for cat in Category.allCases {
             map[cat] = Logger(subsystem: subsystem, category: cat.rawValue)
         }
         return map

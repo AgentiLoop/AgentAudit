@@ -1,0 +1,47 @@
+client:
+  name: basic
+  file-system: device-agnostic
+tools: {}
+targets:
+  "AgentAudit-arm64-apple-macosx-debug.module": ["<AgentAudit-arm64-apple-macosx-debug.module>"]
+  "PackageStructure": ["<PackageStructure>"]
+  "main": ["<AgentAudit-arm64-apple-macosx-debug.module>"]
+  "test": ["<AgentAudit-arm64-apple-macosx-debug.module>"]
+default: "main"
+nodes:
+  "/Users/toddbruss/Documents/GitHub/AgentAudit/Sources/AgentAudit/":
+    is-directory-structure: true
+    content-exclusion-patterns: [".git",".build"]
+commands:
+  "/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/AgentAudit.build/sources":
+    tool: write-auxiliary-file
+    inputs: ["<sources-file-list>","/Users/toddbruss/Documents/GitHub/AgentAudit/Sources/AgentAudit/AgentAudit.swift"]
+    outputs: ["/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/AgentAudit.build/sources"]
+    description: "Write auxiliary file /Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/AgentAudit.build/sources"
+
+  "/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/swift-version--7DB49EB47A4F2B16.txt":
+    tool: write-auxiliary-file
+    inputs: ["<swift-get-version>","/Users/toddbruss/Library/Developer/Toolchains/swift-6.3.2-RELEASE.xctoolchain/usr/bin/swiftc"]
+    outputs: ["/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/swift-version--7DB49EB47A4F2B16.txt"]
+    always-out-of-date: "true"
+    description: "Write auxiliary file /Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/swift-version--7DB49EB47A4F2B16.txt"
+
+  "<AgentAudit-arm64-apple-macosx-debug.module>":
+    tool: phony
+    inputs: ["/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/AgentAudit.build/AgentAudit.swift.o","/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/Modules/AgentAudit.swiftmodule"]
+    outputs: ["<AgentAudit-arm64-apple-macosx-debug.module>"]
+
+  "C.AgentAudit-arm64-apple-macosx-debug.module":
+    tool: shell
+    inputs: ["/Users/toddbruss/Documents/GitHub/AgentAudit/Sources/AgentAudit/AgentAudit.swift","/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/swift-version--7DB49EB47A4F2B16.txt","/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/AgentAudit.build/sources"]
+    outputs: ["/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/AgentAudit.build/AgentAudit.swift.o","/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/Modules/AgentAudit.swiftmodule"]
+    description: "Compiling Swift Module 'AgentAudit' (1 sources)"
+    args: ["/Users/toddbruss/Library/Developer/Toolchains/swift-6.3.2-RELEASE.xctoolchain/usr/bin/swiftc","-module-name","AgentAudit","-emit-dependencies","-emit-module","-emit-module-path","/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/Modules/AgentAudit.swiftmodule","-output-file-map","/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/AgentAudit.build/output-file-map.json","-parse-as-library","-incremental","-c","@/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/AgentAudit.build/sources","-I","/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/Modules","-target","arm64-apple-macosx26.0","-incremental","-enable-batch-mode","-serialize-diagnostics","-index-store-path","/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/index/store","-Onone","-enable-testing","-j10","-DSWIFT_PACKAGE","-DDEBUG","-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE","-module-cache-path","/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-parse-as-library","-emit-objc-header","-emit-objc-header-path","/Users/toddbruss/Documents/GitHub/AgentAudit/.build/arm64-apple-macosx/debug/AgentAudit.build/include/AgentAudit-Swift.h","-swift-version","6","-I","/Users/toddbruss/Library/Developer/Toolchains/swift-6.3.2-RELEASE.xctoolchain/usr/lib/swift/macosx/testing","-L","/Users/toddbruss/Library/Developer/Toolchains/swift-6.3.2-RELEASE.xctoolchain/usr/lib/swift/macosx/testing","-plugin-path","/Users/toddbruss/Library/Developer/Toolchains/swift-6.3.2-RELEASE.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g","-Xcc","-isysroot","-Xcc","/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk","-Xcc","-F","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-Xcc","-fPIC","-Xcc","-g","-package-name","agentaudit"]
+
+  "PackageStructure":
+    tool: package-structure-tool
+    inputs: ["/Users/toddbruss/Documents/GitHub/AgentAudit/Sources/AgentAudit/","/Users/toddbruss/Documents/GitHub/AgentAudit/Package.swift","/Users/toddbruss/Documents/GitHub/AgentAudit/Package.resolved"]
+    outputs: ["<PackageStructure>"]
+    description: "Planning build"
+    allow-missing-inputs: true
+
