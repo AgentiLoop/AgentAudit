@@ -46,21 +46,28 @@ public enum AuditLog {
     nonisolated(unsafe) private static var ringBuffer: [String] = []
     private static let maxEntries = 1000
 
-    // MARK: - Public API
+    /// ISO8601DateFormatter is documented thread-safe — allocate once, not per log call.
+    nonisolated(unsafe) private static let timestampFormatter = ISO8601DateFormatter()
 
-    /// Log an audit event. Writes to os.log and in-memory ring buffer.
-    public nonisolated static func log(_ category: Category, _ message: String) {
-        let logger = loggers[category]!
-        logger.info("\(message, privacy: .public)")
-
-        let timestamp = ISO8601DateFormatter().string(from: Date())
+    private nonisolated static func appendToBuffer(_ category: Category, _ message: String) {
+        let timestamp = timestampFormatter.string(from: Date())
         let entry = "[\(timestamp)] [\(category.rawValue)] \(message)"
         lock.lock()
         ringBuffer.append(entry)
         if ringBuffer.count > maxEntries {
-            ringBuffer.removeFirst(100)
+            ringBuffer.removeFirst(ringBuffer.count - maxEntries + 99)
         }
         lock.unlock()
+    }
+
+    // MARK: - Public API
+
+    /// Log an audit event. Writes to os.log and in-memory ring buffer.
+    public nonisolated static func log(_ category: Category, _ message: String) {
+        if let logger = loggers[category] {
+            logger.info("\(message, privacy: .public)")
+        }
+        appendToBuffer(category, message)
     }
 
     /// Log a permission request and its outcome.
@@ -71,17 +78,10 @@ public enum AuditLog {
 
     /// Log a denied/failed operation.
     public nonisolated static func denied(_ category: Category, _ message: String) {
-        let logger = loggers[category]!
-        logger.warning("\(message, privacy: .public)")
-
-        let timestamp = ISO8601DateFormatter().string(from: Date())
-        let entry = "[\(timestamp)] [\(category.rawValue)] DENIED: \(message)"
-        lock.lock()
-        ringBuffer.append(entry)
-        if ringBuffer.count > maxEntries {
-            ringBuffer.removeFirst(100)
+        if let logger = loggers[category] {
+            logger.warning("\(message, privacy: .public)")
         }
-        lock.unlock()
+        appendToBuffer(category, "DENIED: \(message)")
     }
 
     /// Retrieve recent audit entries (for the ax_get_audit_log tool).
@@ -91,3 +91,4 @@ public enum AuditLog {
         return Array(ringBuffer.suffix(limit))
     }
 }
+
