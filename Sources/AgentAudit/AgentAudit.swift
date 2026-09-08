@@ -42,9 +42,10 @@ public enum AuditLog {
 
     // MARK: - In-Memory Ring Buffer (for ax_get_audit_log tool)
 
-    private static let lock = NSLock()
-    nonisolated(unsafe) private static var ringBuffer: [String] = []
+    private static let ringBuffer = OSAllocatedUnfairLock(initialState: [String]())
     private static let maxEntries = 1000
+    /// Trim in batches so the O(n) `removeFirst` runs once per ~100 appends, not on every log call.
+    private static let trimBatch = 100
 
     /// ISO8601DateFormatter is documented thread-safe — allocate once, not per log call.
     nonisolated(unsafe) private static let timestampFormatter = ISO8601DateFormatter()
@@ -52,12 +53,12 @@ public enum AuditLog {
     private nonisolated static func appendToBuffer(_ category: Category, _ message: String) {
         let timestamp = timestampFormatter.string(from: Date())
         let entry = "[\(timestamp)] [\(category.rawValue)] \(message)"
-        lock.lock()
-        ringBuffer.append(entry)
-        if ringBuffer.count > maxEntries {
-            ringBuffer.removeFirst(ringBuffer.count - maxEntries + 99)
+        ringBuffer.withLock { buffer in
+            buffer.append(entry)
+            if buffer.count > maxEntries + trimBatch {
+                buffer.removeFirst(buffer.count - maxEntries)
+            }
         }
-        lock.unlock()
     }
 
     // MARK: - Public API
@@ -86,9 +87,7 @@ public enum AuditLog {
 
     /// Retrieve recent audit entries (for the ax_get_audit_log tool).
     public nonisolated static func recentEntries(limit: Int = 50) -> [String] {
-        lock.lock()
-        defer { lock.unlock() }
-        return Array(ringBuffer.suffix(limit))
+        ringBuffer.withLock { Array($0.suffix(limit)) }
     }
 }
 
