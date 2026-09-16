@@ -28,7 +28,13 @@ public enum AuditLog {
 
     // MARK: - Loggers (one per category for efficient filtering)
 
-    private static let subsystem = "Agent.app.toddbruss.audit"
+    /// Derived from the host app's bundle identifier at runtime so the package never
+    /// hard-codes the ID from Project.xcconfig (APP_BUNDLE_ID). Falls back to the
+    /// historical value when there is no bundle (e.g. `swift test`).
+    private static let subsystem: String = {
+        let base = Bundle.main.bundleIdentifier ?? "Agent.app.toddbruss"
+        return base + ".audit"
+    }()
 
     nonisolated(unsafe) private static let loggers: [Category: Logger] = {
         // Built from allCases — the old hand-maintained list crashed on the
