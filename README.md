@@ -8,7 +8,7 @@ Add to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/AgentiLoop/AgentAudit.git", from: "1.3.5"),
+    .package(url: "https://github.com/AgentiLoop/AgentAudit.git", from: "1.3.6"),
 ]
 ```
 
