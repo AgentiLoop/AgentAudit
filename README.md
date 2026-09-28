@@ -8,7 +8,7 @@ Add to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/AgentiLoop/AgentAudit.git", from: "1.3.6"),
+    .package(url: "https://github.com/AgentiLoop/AgentAudit.git", from: "1.3.9"),
 ]
 ```
 
@@ -25,7 +25,7 @@ AuditLog.log(.launchAgent, "execute: git status")
 AuditLog.log(.appleScript, "execute: tell application \"Music\" to play")
 AuditLog.log(.agentScript, "run: ArchiveXcode")
 AuditLog.log(.xcode, "build: /path/to/project.xcodeproj")
-AuditLog.log(.shell, "cd /Users/todd/project && swift build")
+AuditLog.log(.shell, "cd /Users/you/project && swift build")
 AuditLog.log(.mcp, "connect: filesystem-server")
 AuditLog.log(.web, "navigate: https://example.com")
 
@@ -58,7 +58,7 @@ let entries = AuditLog.recentEntries(limit: 50)
 ## Viewing Logs
 
 Open **Console.app** and filter by:
-- **Subsystem**: `Agent.app.toddbruss.audit`
+- **Subsystem**: `<host app bundle ID>.audit`
 - **Category**: Any category name (e.g. `Accessibility`, `LaunchDaemon`)
 
 ## Design
@@ -71,8 +71,16 @@ Open **Console.app** and filter by:
 
 ## Requirements
 
-- macOS 26 (Tahoe) or later
-- Swift 6.2+
+- macOS 14 or later
+- Swift 6.4+
+
+## Part of AgentiLoop Agent!
+
+AgentAudit is one of the open-source building blocks of **[AgentiLoop Agent!](https://github.com/AgentiLoop/Agent)**, the native AI agent for macOS 14.6+ on Apple Silicon and Intel. Agent! codes in Xcode, drives any Mac app, runs shell as you or as root, and works with 23 LLM providers plus on-device Apple Intelligence.
+
+🌐 [agentiloop.ai](https://agentiloop.ai/) · ⬇️ [Download Agent!](https://github.com/AgentiLoop/Agent/releases/latest) · 🍺 `brew install --cask agentiloop-agent` · 💻 CLIs: [Rust](https://github.com/AgentiLoop/AgentiLoopCLI) / [Go](https://github.com/AgentiLoop/AgentiLoopGo)
+
+**More Agent! packages:** [AgentAccess](https://github.com/AgentiLoop/AgentAccess) · [AgentColorSyntax](https://github.com/AgentiLoop/AgentColorSyntax) · [AgentD1F](https://github.com/AgentiLoop/AgentD1F) · [AgentEventBridges](https://github.com/AgentiLoop/AgentEventBridges) · [AgentLLM](https://github.com/AgentiLoop/AgentLLM) · [AgentMCP](https://github.com/AgentiLoop/AgentMCP) · [AgentSwift](https://github.com/AgentiLoop/AgentSwift) · [AgentTerminalNeo](https://github.com/AgentiLoop/AgentTerminalNeo) · [AgentTools](https://github.com/AgentiLoop/AgentTools) · [AgentScripts](https://github.com/AgentiLoop/AgentScripts)
 
 ## License
 
