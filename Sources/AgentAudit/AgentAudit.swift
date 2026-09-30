@@ -30,9 +30,15 @@ public enum AuditLog {
 
     /// Derived from the host app's bundle identifier at runtime so the package never
     /// hard-codes the ID from Project.xcconfig (APP_BUNDLE_ID). Falls back to the
-    /// historical value when there is no bundle (e.g. `swift test`).
+    /// historical value when there is no bundle (e.g. `swift test`), matching the
+    /// app's Debug (.debug) / Release split.
     private static let subsystem: String = {
-        let base = Bundle.main.bundleIdentifier ?? "Agent.app.toddbruss"
+        #if DEBUG
+        let fallback = "Agent.app.toddbruss.debug"
+        #else
+        let fallback = "Agent.app.toddbruss"
+        #endif
+        let base = Bundle.main.bundleIdentifier ?? fallback
         return base + ".audit"
     }()
 
